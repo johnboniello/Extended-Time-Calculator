@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# PyInstaller / Inno Setup build output (rebuild from source instead of
+# committing binaries - see packaging/windows/build_windows.bat).
+packaging/windows/build/
+packaging/windows/dist/
+packaging/windows/build_log.txt
+packaging/windows/BUILD_DONE.txt
+packaging/windows/*.spec
+packaging/windows/extended_time_calculator_setup.exe
+
+# Local runtime data - never commit real student data.
+*.db
+student_names.txt
+
+# Editor/OS cruft
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

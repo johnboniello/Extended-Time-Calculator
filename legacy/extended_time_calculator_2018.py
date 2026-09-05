@@ -13,15 +13,21 @@
 #
 #    You should have received a copy of the GNU General Public License
 #along with this program. If not, see <http://www.gnu.org/licenses/>.
-
+import os
 import sys
 import copy
 import time as tm
 from PyQt5 import QtCore, QtGui, QtWidgets
-from app5 import Ui_MainWindow
+from ui_form_2018 import Ui_MainWindow
 
 import sqlite3
-db=sqlite3.connect('TimeAccommodations.db')
+
+dir_path = os.path.join(os.environ['APPDATA'], 'Extended_Time_Calc')
+if not os.path.exists(dir_path):
+     os.makedirs(dir_path)
+file_path = os.path.join(dir_path, 'TimeAccommodations.db')
+db=sqlite3.connect(file_path)
+
 cursor = db.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS students(name TEXT PRIMARY KEY NOT NULL,
                     elat1 REAL,  matht1 REAL,  sst1 REAL, scit1 REAL, wlt1 REAL, enlt1 REAL) ''')
@@ -721,7 +727,10 @@ class Accapp(QtWidgets.QMainWindow, Ui_MainWindow, ):
         except (ValueError, NameError):
             pass
                    
-        db = sqlite3.connect('TimeAccommodations.db')
+        #db = sqlite3.connect('TimeAccommodations.db')
+        
+        file_path = os.path.join(dir_path, 'TimeAccommodations.db')
+        db=sqlite3.connect(file_path)
         cursor=db.cursor()
 
         stname=self.stunamebox.text()
@@ -735,7 +744,10 @@ class Accapp(QtWidgets.QMainWindow, Ui_MainWindow, ):
 
 
     def loadfile(self):
-        db = sqlite3.connect('TimeAccommodations.db')
+       # db = sqlite3.connect('TimeAccommodations.db')
+        #cursor=db.cursor()
+        file_path = os.path.join(dir_path, 'TimeAccommodations.db')
+        db=sqlite3.connect(file_path)
         cursor=db.cursor()
         global stdntinfo
         try:
@@ -759,7 +771,10 @@ class Accapp(QtWidgets.QMainWindow, Ui_MainWindow, ):
 
 
     def updatestudent(self):
-        db = sqlite3.connect('TimeAccommodations.db')
+        #db = sqlite3.connect('TimeAccommodations.db')
+        #cursor=db.cursor()
+        file_path = os.path.join(dir_path, 'TimeAccommodations.db')
+        db=sqlite3.connect(file_path)
         cursor=db.cursor()
         global elati1
         global mathti1
@@ -1153,8 +1168,9 @@ class Accapp(QtWidgets.QMainWindow, Ui_MainWindow, ):
 if __name__ == '__main__':
    
     app = QtWidgets.QApplication(sys.argv)
-    splash_pix = QtGui.QPixmap('disclaimer.png')
+    splash_pix = QtGui.QPixmap('disclaimer4.png')
     splash = QtWidgets.QSplashScreen(splash_pix, QtCore.Qt.WindowStaysOnTopHint)
+    #splash.resize(2000,2000)
     splash.setMask(splash_pix.mask())
     #splash.showMessage('Hello!',)
     splash.show()
