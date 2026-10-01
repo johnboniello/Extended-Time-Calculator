@@ -507,12 +507,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 "different, unique name.",
             )
             return
-        self.db.insert_new(name, self._collect_percentages())
+        # A new student gets only the tests entered this session -- never the
+        # on-file values of whichever student happened to be loaded.
+        values = {key: self.records[key].average_percent() for key, _ in SUBJECTS}
+        self.db.insert_new(name, values)
         QtWidgets.QMessageBox.information(self, "Saved", f"Saved new student '{name}'.")
         self.new_name_edit.clear()
-        self._loaded_student = name
-        self.loaded_label.setText(f"Currently working on: {name} (just saved)")
-        self.update_btn.setEnabled(True)
+        # Start clean for the next student so nothing carries over. To add
+        # more tests for this student later, load them and use Save Update.
+        self._reset_all_tabs()
+        self._loaded_student = None
+        self.loaded_label.setText(
+            f"Saved {name}. Enter tests for the next student, or load an existing one."
+        )
+        self.update_btn.setEnabled(False)
         self._refresh_student_list()
 
     def _load_existing_student(self) -> None:

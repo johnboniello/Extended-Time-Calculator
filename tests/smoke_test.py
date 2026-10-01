@@ -50,13 +50,11 @@ def main():
         assert db.exists("Smith_J")
         print("Save new student OK:", db.load("Smith_J"))
 
-        # --- Now simulate starting Student B WITHOUT restarting the app.
+        # --- Now start Student B WITHOUT restarting the app or loading anyone.
         # In the 2018 version this is exactly the scenario that leaked
-        # Student A's numbers into Student B's calculation (global variables
-        # persisted across students). Here we go through the same "load
-        # existing" reset path a fresh student would trigger by loading
-        # nothing / a blank sheet, then enter different numbers.
-        win._reset_all_tabs()
+        # Student A's numbers into Student B's calculation. Saving A must
+        # leave the tabs clean on its own -- no manual reset here.
+        assert ela_tab.record.entries == [] and ela_tab.record.on_file_percent is None
         ela_tab.expected_spin.setValue(45)
         ela_tab.actual_spin.setValue(40)  # 88.9% -> should NOT need extra time
         ela_tab._add_row()
@@ -69,6 +67,18 @@ def main():
 
         win.new_name_edit.setText("Jones_A")
         win._save_new_student()
+        jones = db.load("Jones_A")
+        assert abs(jones["ela"] - 40 / 45 * 100) < 0.01, jones
+        assert jones["math"] is None, jones
+        print("Student B saved with only their own data OK:", jones)
+
+        # --- Loading A and then saving a NEW student must not copy A's on-file values.
+        win.existing_combo.setCurrentIndex(win.existing_combo.findText("Smith_J"))
+        win._load_existing_student()
+        win.new_name_edit.setText("Lee_K")
+        win._save_new_student()
+        assert db.load("Lee_K")["ela"] is None, db.load("Lee_K")
+        print("New student after a load does not inherit on-file values OK")
 
         # --- Load Student A back and confirm their (and only their) data comes back.
         idx = win.existing_combo.findText("Smith_J")
